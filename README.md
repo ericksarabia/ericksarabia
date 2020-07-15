@@ -34,4 +34,4 @@ Here are some ideas to get you started:
     </a>
 </p>
 
-![ecksarabia](https://ecksarabia.dev/images/slogan.jpg)
+![ericksarabia](https://www.ericksarabia.dev/images/slogan.jpg)
