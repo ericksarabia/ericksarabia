@@ -23,9 +23,6 @@ Here are some ideas to get you started:
     <a href="https://dev.to/ericksarabia" target="_blank">
         <img src="https://img.shields.io/static/v1?label&message=dev.to&color=595959&logo=dev.to&logoColor=fff&style=for-the-badge" alt="DEV">
     </a>
-    <a href="https://www.instagram.com/ecksarabia/" target="_blank">
-        <img src="https://img.shields.io/static/v1?label&message=instagram&color=595959&logo=Instagram&logoColor=fff&style=for-the-badge" alt="Instagram">
-    </a>
     <a href="https://www.linkedin.com/in/ericksarabia" target="_blank">
         <img src="https://img.shields.io/static/v1?label&message=linkedIn&color=595959&logo=LinkedIn&logoColor=fff&style=for-the-badge" alt="LinkedIn">
     </a>
