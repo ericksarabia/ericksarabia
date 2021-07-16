@@ -30,5 +30,3 @@ Here are some ideas to get you started:
         <img src="https://img.shields.io/static/v1?label&message=twitter&color=595959&logo=Twitter&logoColor=fff&style=for-the-badge" alt="Twitter">
     </a>
 </p>
-
-![ericksarabia](https://www.ericksarabia.dev/images/slogan.jpg)
