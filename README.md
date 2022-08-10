@@ -26,7 +26,4 @@ Here are some ideas to get you started:
     <a href="https://www.linkedin.com/in/ericksarabia" target="_blank">
         <img src="https://img.shields.io/static/v1?label&message=linkedIn&color=595959&logo=LinkedIn&logoColor=fff&style=for-the-badge" alt="LinkedIn">
     </a>
-    <a href="https://twitter.com/ericksarabia_" target="_blank">
-        <img src="https://img.shields.io/static/v1?label&message=twitter&color=595959&logo=Twitter&logoColor=fff&style=for-the-badge" alt="Twitter">
-    </a>
 </p>
