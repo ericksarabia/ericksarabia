@@ -13,17 +13,26 @@ Here are some ideas to get you started:
 - ⚡ Fun fact: ...
 -->
 
+<p>
+  <strong>
+    <samp>
+      Hi, I'm Erick! 👋
+    </samp>
+  </strong>
+</p>
+
+<p>
+  <samp>
+    Software Engineer with 10+ years of experience developing web applications using JavaScript, React and Node.js, with a focus on optimizing web projects     and improving development experience. Much of my time is spent researching and implementing new web technologies. The best way to learn is by solving       real problems.
+  </samp>
+</p>
+
 <p align="center">
-    <a href="https://codepen.io/ericksarabia" target="_blank">
-        <img src="https://img.shields.io/static/v1?label&message=codepen&color=595959&logo=CodePen&logoColor=fff&style=for-the-badge" alt="CodePen">
-    </a>
-    <a href="https://codesandbox.io/u/ericksarabia" target="_blank">
-        <img src="https://img.shields.io/static/v1?label&message=codesandbox&color=595959&logo=CodeSandbox&logoColor=fff&style=for-the-badge" alt="CodeSandbox">
-    </a>
-    <a href="https://dev.to/ericksarabia" target="_blank">
-        <img src="https://img.shields.io/static/v1?label&message=dev.to&color=595959&logo=dev.to&logoColor=fff&style=for-the-badge" alt="DEV">
-    </a>
-    <a href="https://www.linkedin.com/in/ericksarabia" target="_blank">
-        <img src="https://img.shields.io/static/v1?label&message=linkedIn&color=595959&logo=LinkedIn&logoColor=fff&style=for-the-badge" alt="LinkedIn">
-    </a>
+  <samp>
+    <a href="https://codepen.io/ericksarabia" target="_blank">CodePen</a> ·
+    <a href="https://codesandbox.io/u/ericksarabia" target="_blank">CodeSandbox</a> ·
+    <a href="https://dev.to/ericksarabia" target="_blank">DEV</a> ·
+    <a href="https://www.linkedin.com/in/ericksarabia" target="_blank">LinkedIn</a> ·
+    <a href="https://twitter.com/ericksarabia_" target="_blank">Twitter</a> 
+  </samp>
 </p>
