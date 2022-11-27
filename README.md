@@ -13,26 +13,12 @@ Here are some ideas to get you started:
 - ⚡ Fun fact: ...
 -->
 
-<p>
-  <strong>
-    <samp>
-      Hi, I'm Erick! 👋
-    </samp>
-  </strong>
-</p>
-
-<p>
-  <samp>
-    Software Engineer with 10+ years of experience developing web applications using JavaScript, React and Node.js, with a focus on optimizing web projects     and improving development experience. Much of my time is spent researching and implementing new web technologies. The best way to learn is by solving       real problems.
-  </samp>
-</p>
-
-<p align="center">
-  <samp>
-    <a href="https://codepen.io/ericksarabia" target="_blank">CodePen</a> ·
-    <a href="https://codesandbox.io/u/ericksarabia" target="_blank">CodeSandbox</a> ·
-    <a href="https://dev.to/ericksarabia" target="_blank">DEV</a> ·
-    <a href="https://www.linkedin.com/in/ericksarabia" target="_blank">LinkedIn</a> ·
-    <a href="https://twitter.com/ericksarabia_" target="_blank">Twitter</a> 
-  </samp>
-</p>
+<pre>
+<samp>ericksarabia@github <strong>~/ericksarabia (master)</strong>> echo $ABOUT_ME</samp>
+<samp>
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ Hi, I'm Erick! 👋 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+Software Engineer with 10+ years of experience developing web applications using<br>JavaScript, React and Node.js, with a focus on improving development experience<br>and optimizing web projects. Much of my time is dedicated to the research of new<br>web technologies. The best way to learn is by solving real problems.
+_ _ _ _ _ _ _ _ <a href="https://codepen.io/ericksarabia">CodePen</a></ins> · <a href="https://codesandbox.io/u/ericksarabia" target="_blank">CodeSandbox</a> · <a href="https://dev.to/ericksarabia" target="_blank">DEV</a> · <a href="https://www.linkedin.com/in/ericksarabia" target="_blank">LinkedIn</a> · <a href="https://twitter.com/ericksarabia_" target="_blank">Twitter</a> _ _ _ _ _ _ _ _ 
+</samp>
+<samp>ericksarabia@github <strong>~/ericksarabia (master)</strong>> █ </samp>
+</pre>
