@@ -18,7 +18,7 @@ Here are some ideas to get you started:
 <samp>
 _______________________________ Hi, I'm Erick! 👋 _______________________________
 Software Engineer with 10+ years of experience developing web applications using<br>JavaScript, React and Node.js, with a focus on improving development experience<br>and optimizing web projects. Much of my time is dedicated to the research of new<br>web technologies. The best way to learn is by solving real problems.
-______________________ <a href="https://codepen.io/ericksarabia">CodePen</a></ins> · <a href="https://dev.to/ericksarabia" target="_blank">DEV</a> · <a href="https://www.linkedin.com/in/ericksarabia" target="_blank">LinkedIn</a> · <a href="https://twitter.com/3ricksarabia" target="_blank">Twitter</a> _______________________ 
+______________________ <a href="https://codepen.io/ericksarabia">CodePen</a></ins> · <a href="https://dev.to/ericksarabia" target="_blank">DEV</a> · <a href="https://www.linkedin.com/in/ericksarabia" target="_blank">LinkedIn</a> · <a href="https://bsky.app/profile/ericksarabia.bsky.social" target="_blank">Bluesky</a> _______________________ 
 </samp>
 <samp>ericksarabia@github <strong>~/ericksarabia (master)</strong>> █ </samp>
 </pre>
