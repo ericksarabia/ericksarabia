@@ -17,7 +17,7 @@ Here are some ideas to get you started:
 <samp>ericksarabia@github <strong>~/ericksarabia (master)</strong>> echo $ABOUT_ME</samp>
 <samp>
 _______________________________ Hi, I'm Erick! 👋 _______________________________
-Software Engineer with 12+ years of experience developing web applications using<br>JavaScript, React and Node.js, with a focus on improving development experience<br>and optimizing web projects. Much of my time is dedicated to the research of new<br>web technologies. The best way to learn is by solving real problems.
+Software Engineer with 13 years of experience building scalable web platforms. I specialize in the JavaScript ecosystem: React, TypeScript and Node.js, with a proven track record of designing modular systems and high performance architectures. I’m passionate about optimizing the developer experience and ensuring that technical execution is consistently aligned with business objectives to drive measurable impact.
 ______________________ <a href="https://codepen.io/ericksarabia">CodePen</a></ins> · <a href="https://dev.to/ericksarabia" target="_blank">DEV</a> · <a href="https://www.linkedin.com/in/ericksarabia" target="_blank">LinkedIn</a> · <a href="https://bsky.app/profile/ericksarabia.bsky.social" target="_blank">Bluesky</a> _______________________ 
 </samp>
 <samp>ericksarabia@github <strong>~/ericksarabia (master)</strong>> █ </samp>
