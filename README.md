@@ -1,7 +1,7 @@
 <p align="center">
   <a href="https://ericksarabia.vercel.app">
     <img src="flight.svg" width="928"
-         alt="Erick Sarabia's flight log: seventeen years of career as a to-scale timeline, flown in a pixel ship, with each entry read out as the ship reaches it">
+         alt="Erick Sarabia's flight log: seventeen years of career as a to-scale timeline running down the page, flown in a pixel ship, with every entry beside the date it belongs to">
   </a>
 </p>
 
