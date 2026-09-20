@@ -1,17 +1,13 @@
-<!--
-**ecksarabia/ecksarabia** is a ✨ _special_ ✨ repository because its `README.md` (this file) appears on your GitHub profile.
+<p align="center">
+  <a href="https://github.com/ericksarabia/starship-portfolio">
+    <img src="flight.svg" width="880"
+         alt="Seventeen years of Erick Sarabia's career as a to-scale timeline, flown in a pixel ship">
+  </a>
+</p>
 
-Here are some ideas to get you started:
-
-- 🔭 I’m currently working on ...
-- 🌱 I’m currently learning ...
-- 👯 I’m looking to collaborate on ...
-- 🤔 I’m looking for help with ...
-- 💬 Ask me about ...
-- 📫 How to reach me: ...
-- 😄 Pronouns: ...
-- ⚡ Fun fact: ...
--->
+<p align="center">
+  <sub>Every gap is real time. <a href="https://github.com/ericksarabia/starship-portfolio">Fly it yourself →</a></sub>
+</p>
 
 <pre>
 <samp>ericksarabia@github <strong>~/ericksarabia (master)</strong>> echo $ABOUT_ME</samp>
