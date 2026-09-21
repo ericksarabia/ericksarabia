@@ -1,5 +1,5 @@
 {
-  "_": "Drawing primitives, lifted once from the starship-portfolio source. The 12x9 ship sprite, the 3x5 bitmap face with its accent tables, and the night palette. Nothing here changes unless the site's own art does.",
+  "_": "Drawing primitives, lifted once from the starship-portfolio source. The 12x9 ship sprite, the 3x5 bitmap face with its accent tables, and both palettes. Light is not dark inverted: dark specks on a light ground read as dirt rather than stars, so it is drawn as ink on paper with the starfield pitched down to grain. Nothing here changes unless the site's own art does.",
   "sprite": [
     "#...........",
     "#++#........",
@@ -404,6 +404,34 @@
       "#1e2440",
       "#454f7d",
       "#b9c4ec"
+    ]
+  },
+  "paletteLight": {
+    "space": "#e8eaf2",
+    "timeline": "#cdd2e2",
+    "timelineLit": "#9aa2c0",
+    "marker": "#7079a0",
+    "markerActive": "#161b30",
+    "markerGlow": "#404a75",
+    "ruler": "#c2c7d9",
+    "eduMarker": "#9c8340",
+    "eduTrack": "#c4b485",
+    "eduActive": "#5c4a12",
+    "eduGlow": "#7d6826",
+    "ship": "#161b30",
+    "shipCore": "#556089",
+    "text": "#5a6485",
+    "textActive": "#1f2540",
+    "trail": [
+      "#2b3252",
+      "#5b6489",
+      "#98a0bd",
+      "#cbcfdd"
+    ],
+    "stars": [
+      "#dcdfea",
+      "#c6cbdb",
+      "#a8aec7"
     ]
   }
 }

@@ -31,6 +31,7 @@ import textwrap
 import unicodedata
 from datetime import date
 from pathlib import Path
+from xml.etree import ElementTree
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent
@@ -39,8 +40,8 @@ PIXELS = json.loads((HERE / 'pixels.json').read_text())
 CONTENT = json.loads((HERE / 'content.json').read_text())
 
 
-def palette(_name='DARK') -> dict:
-    return PIXELS['palette']
+def palette(name='DARK') -> dict:
+    return PIXELS['palette' if name == 'DARK' else 'paletteLight']
 
 
 def sprite() -> list[str]:
@@ -155,6 +156,18 @@ def readme() -> str:
 
 def main(out_dir: str) -> None:
     C = palette('DARK')
+
+    def rules(pal):
+        """One ruleset per palette, keyed the way the groups are classed."""
+        out = []
+        for key, value in pal.items():
+            if isinstance(value, list):
+                # trail and stars are ramps: t0..t3 and s0..s2.
+                out += [f'.{key[0]}{i}{{fill:{c}}}' for i, c in enumerate(value)]
+            else:
+                out.append(f'.{key}{{fill:{value}}}')
+        return ' '.join(out)
+
     SPRITE = sprite()
     GLYPH, MARKS, ACCENTED = glyphs()
     stones = milestones()
@@ -216,13 +229,19 @@ def main(out_dir: str) -> None:
     def right(s, x_end, y):
         text(s, x_end - (len(s) * 4 - 1), y)
 
-    def group(fill, draw, **attrs):
+    def group(tone, draw, **attrs):
+        """Groups carry a palette key as a class, never a colour.
+
+        That is what lets one stylesheet at the top of the file repaint the
+        whole drawing for a light browser: the geometry is written once and
+        the two palettes are two rulesets over it.
+        """
         rects.clear()
         draw()
         if not rects:
             return ''
         extra = ''.join(f' {k}="{v}"' for k, v in attrs.items())
-        return f'<g fill="{fill}"{extra}>' + ''.join(rects) + '</g>'
+        return f'<g class="{tone}"{extra}>' + ''.join(rects) + '</g>'
 
     # --- where each entry sits ----------------------------------------------
     #
@@ -311,28 +330,28 @@ def main(out_dir: str) -> None:
     # the rail as it passed; nothing passes along it now, so the rail is simply
     # drawn, in the tones that read best.
     rail = ''.join([
-        group(C['text'], years),
-        group(C['timelineLit'], dashes),
-        group(C['marker'], lambda: ribbon('work')),
-        group(C['eduMarker'], lambda: ribbon('education')),
-        group(C['markerGlow'], lambda: markers('work')),
-        group(C['eduGlow'], lambda: markers('education')),
-        group(C['timelineLit'], connectors),
-        group(C['markerActive'], terminus),
+        group('text', years),
+        group('timelineLit', dashes),
+        group('marker', lambda: ribbon('work')),
+        group('eduMarker', lambda: ribbon('education')),
+        group('markerGlow', lambda: markers('work')),
+        group('eduGlow', lambda: markers('education')),
+        group('timelineLit', connectors),
+        group('markerActive', terminus),
     ])
 
     # --- the log ------------------------------------------------------------
 
     entries = []
     for c in cards:
-        parts = [group(C['text'], lambda c=c: text(c['meta'], TEXT_X, c['y']))]
+        parts = [group('text', lambda c=c: text(c['meta'], TEXT_X, c['y']))]
         if c['name']:
-            parts.append(group(C['eduActive'] if c['edu'] else C['markerActive'],
+            parts.append(group('eduActive' if c['edu'] else C['markerActive'],
                                lambda c=c: text(c['name'], TEXT_X, c['y'] + NAME_DY)))
         if c['role']:
-            parts.append(group(C['eduGlow'] if c['edu'] else C['markerGlow'],
+            parts.append(group('eduGlow' if c['edu'] else C['markerGlow'],
                                lambda c=c: text(c['role'], TEXT_X, c['y'] + ROLE_DY)))
-        parts.append(group(C['shipCore'], lambda c=c: [
+        parts.append(group('shipCore', lambda c=c: [
             text(l, TEXT_X, c['body_y'] + n * LINE_H) for n, l in enumerate(c['lines'])]))
         entries.append(''.join(parts))
 
@@ -385,7 +404,7 @@ def main(out_dir: str) -> None:
     for k in range(TRAIL_STEPS):
         x = back - (2 + k * 3) * SHIP_SCALE
         shape = TRAIL_SHAPES[2 if k == 0 else 1 if k <= 2 else 0]
-        tone = ramp[min(len(ramp) - 1, (k + 1) // 2)]
+        tone = min(len(ramp) - 1, (k + 1) // 2)
         # Straight out of the engine at first, then opening into a cone, with
         # the axis kept alive on alternate steps so it does not part down the
         # middle.
@@ -403,7 +422,7 @@ def main(out_dir: str) -> None:
                     plume.append(
                         f'<rect x="{x - c * SHIP_SCALE}" '
                         f'y="{lane + (r - len(shape) // 2) * SHIP_SCALE}" '
-                        f'width="{SHIP_SCALE}" height="{SHIP_SCALE}" fill="{tone}">'
+                        f'width="{SHIP_SCALE}" height="{SHIP_SCALE}" class="t{tone}">'
                         f'<animate attributeName="opacity" values="1;0.25;1" '
                         f'dur="{0.6 + rnd.random() * 0.8:.2f}s" '
                         f'begin="{rnd.random():.2f}s" repeatCount="indefinite"/></rect>')
@@ -447,25 +466,49 @@ def main(out_dir: str) -> None:
                        f'dur="{2.2 + rnd.random()*2.4:.2f}s" begin="{rnd.random()*3:.2f}s" '
                        f'repeatCount="indefinite"/>') if tone == 2 else ''
             sky.append(f'<rect x="{sx}" y="{sy}" width="1" height="1" '
-                       f'fill="{C["stars"][tone]}">{twinkle}</rect>' if twinkle else
-                       f'<rect x="{sx}" y="{sy}" width="1" height="1" fill="{C["stars"][tone]}"/>')
+                       f'class="s{tone}">{twinkle}</rect>' if twinkle else
+                       f'<rect x="{sx}" y="{sy}" width="1" height="1" class="s{tone}"/>')
 
     svg = f"""<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {H}" width="{W*2}" height="{H*2}" shape-rendering="crispEdges" role="img" aria-label="Erick Sarabia's flight log">
   <title>Erick Sarabia — flight log</title>
   <style>
+    /* Two palettes over one drawing. The browser's own setting picks, which is
+       the user's rather than GitHub's — someone with the site in dark and the
+       system in light gets the light one. That is the only handle an image has:
+       an SVG embedded as an image cannot see the page it hangs in.
+
+       Light is not dark inverted. It is the site's own LIGHT palette, where
+       dark specks on a light ground would read as dirt rather than stars, so
+       the sky is pitched down to grain and the trail's ramp runs the other way
+       — ink rather than light. */
+    {rules(C)}
+    @media (prefers-color-scheme: light) {{ {rules(palette('LIGHT'))} }}
+
     /* The only thing that travels. Linear, because a crossing that eased in
        and out would look like it was being steered rather than passing. */
     #ship {{ animation: drift {drift_secs}s linear infinite }}
     @keyframes drift {{ {drift} }}
   </style>
   <defs>{''.join(defs)}</defs>
-  <rect width="{W}" height="{H}" fill="{C['space']}"/>
+  <rect width="{W}" height="{H}" class="space"/>
   {''.join(sky)}
-  <g id="ship" opacity="{SHIP_OPACITY}">{trail}<g fill="{C['shipCore']}">{''.join(edge)}</g><g fill="{C['marker']}">{''.join(core)}</g></g>
+  <g id="ship" opacity="{SHIP_OPACITY}">{trail}<g class="shipCore">{''.join(edge)}</g><g class="marker">{''.join(core)}</g></g>
   {rail}
   {''.join(entries)}
 </svg>
 """
+
+    # An SVG is served as XML and parsed as XML, so a stray angle bracket is
+    # not a typo, it is a blank image. CSS comments do not protect one: the
+    # markup parser reads <style> content as markup, and an <img> written inside
+    # a /* */ comment closes nothing and breaks the file. Checked before it is
+    # written, because the failure is silent everywhere downstream.
+    try:
+        ElementTree.fromstring(svg)
+    except ElementTree.ParseError as bad:
+        raise SystemExit(f'the SVG this produced is not well-formed XML: {bad}\n'
+                         f'nothing was written. An angle bracket inside the '
+                         f'<style> block is the usual cause.')
 
     out = Path(out_dir)
     (out / 'flight.svg').write_text(svg)
