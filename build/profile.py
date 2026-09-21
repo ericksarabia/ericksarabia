@@ -140,6 +140,13 @@ DRIFT_SEED = 81
 # is its label and its title, log entry zero is only its label.
 HEADER_H = 9                 # advance from one header line to the next
 BODY_GAP = 10                # from the last header line to the first of the body
+
+# The collected stack, as labels. The site sets its tags in a 1px box with
+# 5px/8px of padding around 11px text; at a five-unit face the same proportions
+# come out at two and three.
+CHIP_PAD_X, CHIP_PAD_Y = 3, 2
+CHIP_GAP_X, CHIP_GAP_Y = 3, 3
+CHIP_H = 2 + 2 * CHIP_PAD_Y + 5
 LINE_H = 7                   # the face is 5 tall; 7 is the site's leading
 ENTRY_GAP = 20
 
@@ -271,9 +278,8 @@ def main(out_dir: str) -> None:
             body=m['story'], year=m['start'].split('-')[0],
             edu=m['kind'] == 'education'))
     cards.append(dict(meta='END OF THE LINE', name=epi['title'], role=None,
-                      body=epi['story'] + [f'{epi["stack_label"].upper()}   '
-                                           + '  '.join(stack)],
-                      year=None, edu=False))
+                      body=epi['story'] + [epi['stack_label'].upper()],
+                      stack=stack, year=None, edu=False))
 
     cursor = TOP
     for c in cards:
@@ -292,6 +298,19 @@ def main(out_dir: str) -> None:
         c['y'] = cursor
         c['body_y'] = c['y'] + (len(c['head']) - 1) * HEADER_H + BODY_GAP
         c['end'] = c['body_y'] + len(lines) * LINE_H
+
+        # Labels flow along the line and wrap, so the block is as tall as the
+        # stack needs rather than a number written down here.
+        c['chips'] = []
+        x, y = TEXT_X, c['end'] + CHIP_GAP_Y
+        for label in c.get('stack') or []:
+            width = 4 * len(label) + 1 + 2 * CHIP_PAD_X
+            if x > TEXT_X and x + width > W - TEXT_RIGHT:
+                x, y = TEXT_X, y + CHIP_H + CHIP_GAP_Y
+            c['chips'].append((x, y, width, label))
+            x += width + CHIP_GAP_X
+        if c['chips']:
+            c['end'] = y + CHIP_H
         cursor = c['end'] + ENTRY_GAP
 
     H = cursor - ENTRY_GAP + 10
@@ -367,6 +386,18 @@ def main(out_dir: str) -> None:
         ]
         parts.append(group('shipCore', lambda c=c: [
             text(l, TEXT_X, c['body_y'] + n * LINE_H) for n, l in enumerate(c['lines'])]))
+
+        if c['chips']:
+            def boxes(c=c):
+                for x, y, w, _ in c['chips']:
+                    px(x, y, w, 1)                          # top
+                    px(x, y + CHIP_H - 1, w, 1)             # bottom
+                    px(x, y + 1, 1, CHIP_H - 2)             # left
+                    px(x + w - 1, y + 1, 1, CHIP_H - 2)     # right
+            parts.append(group('timelineLit', boxes))
+            parts.append(group('shipCore', lambda c=c: [
+                text(label, x + 1 + CHIP_PAD_X, y + 1 + CHIP_PAD_Y)
+                for x, y, _, label in c['chips']]))
         entries.append(''.join(parts))
 
     # --- ship ---------------------------------------------------------------
