@@ -73,8 +73,6 @@ def epilogue() -> dict:
 # pixels, so it is not worth a glyph of its own.
 SUBSTITUTIONS = {'—': '-', '–': '-', '’': "'"}
 
-SITE = CONTENT['site']
-
 
 
 # --- geometry ---------------------------------------------------------------
@@ -143,17 +141,14 @@ def month_index(ym: str) -> int:
 
 
 def readme() -> str:
-    """The drawing and a line under it. Nothing else — the log is inside the SVG,
-    and the profile page's own fields carry where to find him."""
-    return f'''<p align="center">
-  <a href="{SITE}">
-    <img src="flight.svg" width="928"
-         alt="Erick Sarabia's flight log: seventeen years of career as a timeline running down the page, flown in a pixel ship, with every entry beside its own marker">
-  </a>
-</p>
+    """The drawing, and nothing else.
 
-<p align="center">
-  <sub>Seventeen years, one log. <a href="{SITE}">Fly it yourself →</a></sub>
+    No caption and no link around it: the log is inside the SVG and says all of
+    it, and the profile page's own fields already carry where to find him.
+    """
+    return '''<p align="center">
+  <img src="flight.svg" width="928"
+       alt="Erick Sarabia's flight log: seventeen years of career as a timeline running down the page, flown in a pixel ship, with every entry beside its own marker">
 </p>
 '''
 
