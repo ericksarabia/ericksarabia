@@ -1,5 +1,5 @@
 {
-  "_": "Drawing primitives, lifted once from the starship-portfolio source. The 12x9 ship sprite, the 3x5 bitmap face with its accent tables, and both palettes. Light is not dark inverted: dark specks on a light ground read as dirt rather than stars, so it is drawn as ink on paper with the starfield pitched down to grain. Nothing here changes unless the site's own art does.",
+  "_": "Drawing primitives, lifted once from the starship-portfolio source: the 12x9 ship sprite, the 3x5 bitmap face with its accent tables, and both palettes. Light is not dark inverted — dark specks on a light ground read as dirt rather than stars, so it is drawn as ink on paper with the starfield pitched down to grain. ONE DELIBERATE DEPARTURE: `space` is GitHub's own page colour, #0d1117 and #ffffff, not the site's #0a0c14 and #e8eaf2, so the drawing sits flush on the README instead of as a card laid over it. Do not restore it by re-copying from the site.",
   "sprite": [
     "#...........",
     "#++#........",
@@ -379,7 +379,7 @@
     ]
   },
   "palette": {
-    "space": "#0a0c14",
+    "space": "#0d1117",
     "timeline": "#232a44",
     "timelineLit": "#3d4874",
     "marker": "#5d6a9e",
@@ -407,7 +407,7 @@
     ]
   },
   "paletteLight": {
-    "space": "#e8eaf2",
+    "space": "#ffffff",
     "timeline": "#cdd2e2",
     "timelineLit": "#9aa2c0",
     "marker": "#7079a0",
