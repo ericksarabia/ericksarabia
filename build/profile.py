@@ -143,7 +143,8 @@ STAR_DENSITY = (10.2, 6.8, 3.7)
 #
 # The periods are primes, so no two ever line up and the whole set only repeats
 # after a span nobody will sit through.
-SIGHTING_PERIODS = (23, 29, 31, 37, 41, 43, 47, 53)
+SIGHTING_PERIODS = (11, 13, 17, 19, 23, 29, 31, 37, 41, 43,
+                    47, 53, 59, 61, 67, 71, 73, 79, 83, 89)
 SIGHTING_FLIGHT = 1.1             # how long one is on screen
 SIGHTING_REACH = 140              # how far it gets in that time
 SIGHTING_DX, SIGHTING_DY = -0.97, 0.24
@@ -646,7 +647,13 @@ def main(out_dir: str) -> None:
                        f'<rect x="{sx}" y="{sy}" width="1" height="1" class="s{tone}"/>')
 
     # A sighting is a head with a tail walking back up its own flight vector,
-    # brightest at the front. It sits invisible for almost all of its period
+    # brightest at the front, in the trail ramp rather than the star ramp.
+    #
+    # It was built out of the star tones first, and nine of its twelve cells
+    # landed on the dimmest of the three, twenty luminance units off the
+    # ground — so only the head ever registered and the thing read as a speck.
+    # The trail ramp is the one the site keeps for light in motion, and even
+    # its faintest step is three times clear of the background. It sits invisible for almost all of its period
     # and then crosses; the opacity keyframes are what make it an event rather
     # than a permanent object, and they also hide the jump back to the start.
     rnd = random.Random(404)
@@ -660,7 +667,7 @@ def main(out_dir: str) -> None:
         y1 = y0 + SIGHTING_DY * SIGHTING_REACH
         cells = ''.join(
             f'<rect x="{round(-SIGHTING_DX * t)}" y="{round(-SIGHTING_DY * t)}" '
-            f'width="1" height="1" class="s{2 if t == 0 else 1 if t <= 2 else 0}"/>'
+            f'width="1" height="1" class="t{0 if t == 0 else 1 if t <= 2 else 2 if t <= 6 else 3}"/>'
             for t in range(SIGHTING_TAIL))
         # Where in its own period it crosses, staggered so they do not all
         # arrive in the first seconds of the loop.
