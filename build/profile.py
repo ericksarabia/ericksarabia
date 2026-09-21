@@ -149,6 +149,7 @@ CHIP_PAD_X, CHIP_PAD_Y = 3, 2
 CHIP_GAP_X, CHIP_GAP_Y = 3, 3
 CHIP_H = 2 + 2 * CHIP_PAD_Y + 5
 LINE_H = 7                   # the face is 5 tall; 7 is the site's leading
+UNDERLINE_DY = 6             # a row clear of the glyphs, inside the same line
 ENTRY_GAP = 20
 
 
@@ -186,11 +187,16 @@ def wrap_runs(runs, edu: bool) -> list:
     straddle a run, because the markup always wraps whole ones, so a word can
     take its tone from the character it starts on.
     """
-    tone_of = {
-        None: 'shipCore',
-        'place': 'eduActive' if edu else 'markerActive',
-        'role': 'eduGlow' if edu else 'markerGlow',
-    }
+    # Both take the track's brightest tone, and both are underlined.
+    #
+    # The role used to take the glow tone, which measures DIMMER against the
+    # ground than the prose around it — 128 against 163 in dark — so the thing
+    # meant to stand out was sinking instead. There is no tone between the
+    # prose and the brightest one in either palette, so the answer is to stop
+    # separating place from role by colour: what the reader needs is for both
+    # to leave the sentence, not to be told which is which.
+    lit = 'eduActive' if edu else 'markerActive'
+    tone_of = {None: 'shipCore', 'place': lit, 'role': lit}
     plain, tones = '', []
     for text_run, role in runs:
         plain += text_run
@@ -473,8 +479,15 @@ def main(out_dir: str) -> None:
         for n, line in enumerate(c['lines']):
             y = c['body_y'] + n * LINE_H
             for run, tone, col in line:
-                parts.append(group(tone, lambda r=run, x=TEXT_X + col * 4, y=y:
-                                   text(r, x, y)))
+                x = TEXT_X + col * 4
+                parts.append(group(tone, lambda r=run, x=x, y=y: text(r, x, y)))
+                if tone != 'shipCore':
+                    # A rule under the run, a row below the glyphs. Bold is not
+                    # available — smearing a 3x5 face fills its own counters and
+                    # needs a wider advance than the column can pay for — so the
+                    # underline is what carries the extra weight.
+                    parts.append(group(tone, lambda w=len(run) * 4 - 1, x=x, y=y:
+                                       px(x, y + UNDERLINE_DY, w, 1)))
 
         if c['chips']:
             def boxes(c=c):

@@ -8,14 +8,14 @@
     {
       "id": "upp",
       "kind": "education",
-      "name": "Universidad Politécnica de Pachuca",
+      "name": "UPP",
       "title": "Bachelor's Degree in Software Engineering",
       "period": "Sep 2009 — Apr 2013",
       "start": "2009-09",
       "end": "2012-12",
       "story": [
         "I was ten the first time I sat in front of a computer. Then school taught me to program. This was the only thing I ever wanted to study.",
-        "I went to [[Universidad Politécnica de Pachuca]] for a {{Bachelor's Degree in Software Engineering}}, to learn how software is really made. I left with a job already waiting."
+        "I went to [[UPP]] for a {{Bachelor's Degree in Software Engineering}}, to learn how software is really made. I left with a job already waiting."
       ],
       "tech": []
     },
@@ -151,13 +151,13 @@
     {
       "id": "utel",
       "kind": "education",
-      "name": "UTEL Universidad",
-      "title": "Master's Degree in Software Engineering and Management",
+      "name": "UTEL",
+      "title": "Master's Degree in Software Engineering Management",
       "period": "Jan 2024 — Dec 2025",
       "start": "2024-01",
       "end": "2025-12",
       "story": [
-        "A {{Master's Degree in Software Engineering and Management}} from [[UTEL Universidad]], earned while I was running a team.",
+        "A {{Master's Degree in Software Engineering Management}} from [[UTEL]], earned while I was running a team.",
         "I did it for one reason. Some day I want to teach: to stand in a classroom and hand all of this to someone who is just starting, the way it was once handed to me."
       ],
       "tech": []
