@@ -148,7 +148,12 @@ BODY_GAP = 10                # from the last header line to the first of the bod
 CHIP_PAD_X, CHIP_PAD_Y = 3, 2
 CHIP_GAP_X, CHIP_GAP_Y = 3, 3
 CHIP_H = 2 + 2 * CHIP_PAD_Y + 5
-LINE_H = 7                   # the face is 5 tall; 7 is the site's leading
+# The face is 5 tall and the site leads it at 7. Eight here, one more, because
+# the underline needs somewhere to sit: at 7 it lands directly against the top
+# of the line below and the two crowd each other. At 8 it has a clear row on
+# either side. One unit is also the least this can move — there is no half
+# pixel to spend — and it costs 47 units across the log.
+LINE_H = 8
 UNDERLINE_DY = 6             # a row clear of the glyphs, inside the same line
 ENTRY_GAP = 20
 
