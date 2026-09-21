@@ -344,7 +344,9 @@ def main(out_dir: str) -> None:
             # which the rail and the markers both read.
             body=m['story'], year=m['start'].split('-')[0],
             edu=m['kind'] == 'education'))
-    cards.append(dict(meta='END OF THE LINE', name=epi['title'], title=None,
+    # No label above it: "The log continues" is the closing line, and a heading
+    # reading END OF THE LINE directly over it said the opposite thing anyway.
+    cards.append(dict(meta=None, name=epi['title'], title=None,
                       body=epi['story'] + [epi['stack_label'].upper()],
                       stack=stack, year=None, edu=False))
 
