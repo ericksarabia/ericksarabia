@@ -136,11 +136,18 @@ STAR_DENSITY = (10.2, 6.8, 3.7)
 # the three never line up and the combined pattern takes tens of minutes to
 # come round. They fall leftward, against the way the ship travels, so the two
 # are never mistaken for each other.
-SIGHTING_PERIODS = (41, 58, 73)   # seconds apart, deliberately coprime
-SIGHTING_FLIGHT = 0.9             # how long one is on screen
-SIGHTING_REACH = 112              # how far it gets in that time
+# One per band down the whole drawing. Three of them, placed at random inside
+# the top half, all landed in the top third — and a reader looking at the lower
+# half of an image this tall would never have seen one at all. Bands guarantee
+# that wherever you are looking, something can cross it.
+#
+# The periods are primes, so no two ever line up and the whole set only repeats
+# after a span nobody will sit through.
+SIGHTING_PERIODS = (23, 29, 31, 37, 41, 43, 47, 53)
+SIGHTING_FLIGHT = 1.1             # how long one is on screen
+SIGHTING_REACH = 140              # how far it gets in that time
 SIGHTING_DX, SIGHTING_DY = -0.97, 0.24
-SIGHTING_TAIL = 8
+SIGHTING_TAIL = 12
 
 DRIFT_PASSES = 5
 DRIFT_SPEED = 62             # units a second while crossing
@@ -644,9 +651,11 @@ def main(out_dir: str) -> None:
     # than a permanent object, and they also hide the jump back to the start.
     rnd = random.Random(404)
     heads, rules_css = [], []
+    bands = len(SIGHTING_PERIODS)
     for i, period in enumerate(SIGHTING_PERIODS):
         x0 = rnd.uniform(W * 0.45, W * 0.98)
-        y0 = rnd.uniform(12, max(20, H * 0.55))
+        lo, hi = 10 + i * (H - 40) / bands, 10 + (i + 1) * (H - 40) / bands
+        y0 = rnd.uniform(lo, hi)
         x1 = x0 + SIGHTING_DX * SIGHTING_REACH
         y1 = y0 + SIGHTING_DY * SIGHTING_REACH
         cells = ''.join(
