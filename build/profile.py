@@ -262,7 +262,7 @@ def main(out_dir: str) -> None:
     # so nothing can leave a hole.
 
     stack = list(dict.fromkeys(t for m in stones for t in m['tech']))
-    cards = [dict(meta='LOG ENTRY ZERO', name=None, title=None, period=None,
+    cards = [dict(meta='LOG ENTRY ZERO', name=None, title=None,
                   body=opening(), year=None, edu=False)]
     for i, m in enumerate(stones, 1):
         cards.append(dict(
@@ -272,14 +272,12 @@ def main(out_dir: str) -> None:
             meta=None,
             name=m['name'],
             title=m['title'],
-            period=m['period'],
             # Not drawn any more: the header states the full period. It stays
             # as the mark of which cards are stops on the line, which the rail
             # and the markers both read.
             body=m['story'], year=m['start'].split('-')[0],
             edu=m['kind'] == 'education'))
-    cards.append(dict(meta='END OF THE LINE', name=epi['title'],
-                      title=None, period=None,
+    cards.append(dict(meta='END OF THE LINE', name=epi['title'], title=None,
                       body=epi['story'] + [epi['stack_label'].upper()],
                       stack=stack, year=None, edu=False))
 
@@ -297,7 +295,6 @@ def main(out_dir: str) -> None:
         where = [(part, tone) for part, tone in (
             (c['name'], 'eduActive' if c['edu'] else 'markerActive'),
             (c['title'], 'eduGlow' if c['edu'] else 'markerGlow'),
-            (c['period'], 'text'),
         ) if part]
         c['head'] = [seg for seg in ([[(c['meta'], 'text')]] if c['meta'] else [])
                      + ([where] if where else [])]
