@@ -75,10 +75,6 @@ SUBSTITUTIONS = {'—': '-', '–': '-', '’': "'"}
 
 SITE = CONTENT['site']
 
-# His, verbatim. The one part of the README that is prose rather than drawing,
-# and the one number in it disagrees with the log: it says thirteen years where
-# the milestones run to seventeen.
-TERMINAL = CONTENT['terminal']
 
 
 # --- geometry ---------------------------------------------------------------
@@ -147,7 +143,8 @@ def month_index(ym: str) -> int:
 
 
 def readme() -> str:
-    """Banner, then the terminal block, which is his and is kept verbatim."""
+    """The drawing and a line under it. Nothing else — the log is inside the SVG,
+    and the profile page's own fields carry where to find him."""
     return f'''<p align="center">
   <a href="{SITE}">
     <img src="flight.svg" width="928"
@@ -158,8 +155,6 @@ def readme() -> str:
 <p align="center">
   <sub>Seventeen years, one log. <a href="{SITE}">Fly it yourself →</a></sub>
 </p>
-
-{TERMINAL}
 '''
 
 
