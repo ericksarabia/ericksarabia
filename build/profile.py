@@ -286,12 +286,12 @@ def main(out_dir: str) -> None:
 
     cursor = TOP
     for c in cards:
-        lines = []
-        for i, para in enumerate(c['body']):
-            if i:
-                lines.append('')
-            lines += textwrap.wrap(para, CHARS_PER_LINE)
-        c['lines'] = lines
+        # Paragraphs each start a fresh line but are not separated by a blank
+        # one. The break still reads — a paragraph ends short of the margin and
+        # the next begins at it — and thirteen blank lines across the log came
+        # to ninety-one units of height doing nothing else.
+        c['lines'] = [line for para in c['body']
+                      for line in textwrap.wrap(para, CHARS_PER_LINE)]
         # A milestone states itself on one line: where, what, and when. Three
         # tones rather than three lines is what keeps them apart — the name
         # brightest, the role in its track's accent, the dates dim.
@@ -312,7 +312,7 @@ def main(out_dir: str) -> None:
 
         c['y'] = cursor
         c['body_y'] = c['y'] + (len(c['head']) - 1) * HEADER_H + BODY_GAP
-        c['end'] = c['body_y'] + len(lines) * LINE_H
+        c['end'] = c['body_y'] + len(c['lines']) * LINE_H
 
         # Labels flow along the line and wrap, so the block is as tall as the
         # stack needs rather than a number written down here.
