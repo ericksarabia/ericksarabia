@@ -91,9 +91,10 @@ SUBSTITUTIONS = {'—': '-', '–': '-', '’': "'"}
 # working or studying.
 
 W = 464
-RAIL_X = 10                  # the main line
+YEAR_RIGHT = 18              # year numbers, right-aligned into their own column
+RAIL_X = 26                  # the main line
 EDU_RAIL_X = RAIL_X - 3      # education runs on its own rail, as on the canvas
-TEXT_X = 24
+TEXT_X = 40
 TEXT_RIGHT = 12
 CHARS_PER_LINE = (W - TEXT_X - TEXT_RIGHT + 1) // 4
 
@@ -242,6 +243,9 @@ def main(out_dir: str) -> None:
                                  f'x="{cursor}" y="{y - len(mk)}"/>')
             cursor += 4
 
+    def right(s, x_end, y):
+        text(s, x_end - (len(s) * 4 - 1), y)
+
     def group(tone, draw, **attrs):
         """Groups carry a palette key as a class, never a colour.
 
@@ -272,9 +276,9 @@ def main(out_dir: str) -> None:
             meta=None,
             name=m['name'],
             title=m['title'],
-            # Not drawn any more: the header states the full period. It stays
-            # as the mark of which cards are stops on the line, which the rail
-            # and the markers both read.
+            # The period is not drawn: the year beside the rail carries when,
+            # and `year` also marks which cards are stops on the line, which
+            # the rail and the markers both read.
             body=m['story'], year=m['start'].split('-')[0],
             edu=m['kind'] == 'education'))
     cards.append(dict(meta='END OF THE LINE', name=epi['title'], title=None,
@@ -359,6 +363,11 @@ def main(out_dir: str) -> None:
                     span = 1 - abs(dx)
                     px(RAIL_X + dx, c['y'] + 2 - span, 1, span * 2 + 1)
 
+    def years():
+        for c in cards:
+            if c['year']:
+                right(c['year'], YEAR_RIGHT, c['y'])
+
     def connectors():
         # The post from the site's marker: the thing that says which paragraph
         # belongs to which stop.
@@ -372,6 +381,7 @@ def main(out_dir: str) -> None:
     # the rail as it passed; nothing passes along it now, so the rail is simply
     # drawn, in the tones that read best.
     rail = ''.join([
+        group('text', years),
         group('timelineLit', dashes),
         group('marker', lambda: ribbon('work')),
         group('eduMarker', lambda: ribbon('education')),
