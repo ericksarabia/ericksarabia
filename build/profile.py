@@ -25,7 +25,6 @@ to be computed here and baked in.
 """
 
 import json
-import math
 import random
 import re
 import sys
@@ -132,16 +131,6 @@ DRIFT_PASSES = 5
 DRIFT_SPEED = 62             # units a second while crossing
 DRIFT_OFFSCREEN = 0.15       # share of each pass spent waiting past the right edge
 DRIFT_MARGIN = 16            # how far beyond each edge it sits when out of frame
-# Each crossing descends. A flat pass covers the full width and none of the
-# height, which on a drawing twice as tall as it is wide reads as a rail.
-#
-# Twelve degrees is a ceiling, not a taste. The sprite cannot turn to meet its
-# heading: on a pixel grid only quarter turns are exact, and anything else
-# resamples, which is the one thing this project never does. So the nose stays
-# pointing right while the ship travels down-right, and the angle has to be
-# small enough that nobody reads the difference. Past about eighteen degrees it
-# stops looking like a descent and starts looking like a skid.
-DRIFT_ANGLE = 12
 # The heights are one per band so the whole height gets crossed, and the bands
 # are shuffled so it does not march predictably down the page.
 DRIFT_SEED = 81
@@ -471,10 +460,6 @@ def main(out_dir: str) -> None:
         ['#..', '##.', '###', '##.', '#..'],
     ]
     back = -(len(SPRITE[0]) // 2) * SHIP_SCALE
-    # The cone leans with the heading. Behind a ship going down-right is up and
-    # to the left, so every cell rises with its distance — snapped to the
-    # sprite's own lanes, or it would sit half a pixel off the thing it left.
-    lean = math.tan(math.radians(DRIFT_ANGLE))
     ramp = C['trail']
     rnd = random.Random(11)
     plume = []
@@ -492,14 +477,13 @@ def main(out_dir: str) -> None:
             lanes = [0, -spread, spread] if k % 2 == 0 else [-spread, spread]
 
         for lane in lanes:
-            rise = round((2 + k * 3) * SHIP_SCALE * lean / SHIP_SCALE) * SHIP_SCALE
             for r, row in enumerate(shape):
                 for c, cell in enumerate(row):
                     if cell != '#':
                         continue
                     plume.append(
                         f'<rect x="{x - c * SHIP_SCALE}" '
-                        f'y="{lane - rise + (r - len(shape) // 2) * SHIP_SCALE}" '
+                        f'y="{lane + (r - len(shape) // 2) * SHIP_SCALE}" '
                         f'width="{SHIP_SCALE}" height="{SHIP_SCALE}" class="t{tone}">'
                         f'<animate attributeName="opacity" values="1;0.25;1" '
                         f'dur="{0.6 + rnd.random() * 0.8:.2f}s" '
@@ -507,20 +491,16 @@ def main(out_dir: str) -> None:
     trail = ''.join(plume)
 
 
-    entry_x, exit_x = -DRIFT_MARGIN, W + DRIFT_MARGIN
-    drop = round((exit_x - entry_x) * math.tan(math.radians(DRIFT_ANGLE)))
-
     rnd = random.Random(DRIFT_SEED)
     bands = list(range(DRIFT_PASSES))
     rnd.shuffle(bands)
-    # The bands hold the height a pass STARTS at, and leave the drop below them
-    # so the ship is still in frame when it leaves on the right.
-    heights, span = [], H - 48 - drop
+    heights = []
     for b in bands:
-        lo = 24 + b * span / DRIFT_PASSES
-        hi = 24 + (b + 1) * span / DRIFT_PASSES
-        heights.append(round(rnd.uniform(lo + 6, hi - 6)))
+        lo = 24 + b * (H - 48) / DRIFT_PASSES
+        hi = 24 + (b + 1) * (H - 48) / DRIFT_PASSES
+        heights.append(round(rnd.uniform(lo + 12, hi - 12)))
 
+    entry_x, exit_x = -DRIFT_MARGIN, W + DRIFT_MARGIN
     pass_secs = (exit_x - entry_x) / DRIFT_SPEED / (1 - DRIFT_OFFSCREEN)
     drift_secs = round(pass_secs * DRIFT_PASSES)
 
@@ -532,7 +512,7 @@ def main(out_dir: str) -> None:
         start = i / DRIFT_PASSES * 100
         gone = (i + 1 - DRIFT_OFFSCREEN) / DRIFT_PASSES * 100
         frames.append(f'{start:.3f}% {{ transform: translate({entry_x}px, {y}px) }}')
-        frames.append(f'{gone:.3f}% {{ transform: translate({exit_x}px, {y + drop}px); '
+        frames.append(f'{gone:.3f}% {{ transform: translate({exit_x}px, {y}px); '
                       f'animation-timing-function: steps(1, jump-end) }}')
     frames.append(f'100% {{ transform: translate({entry_x}px, {heights[0]}px) }}')
     drift = ' '.join(frames)
@@ -616,10 +596,8 @@ def main(out_dir: str) -> None:
     print(f'  {len(defs)} glyph symbols, {svg.count("<use")} references')
     print(f'  {len(cards)} entries packed, no gaps, {CHARS_PER_LINE} chars per line')
     print(f'  ship: {len(SPRITE[0])*SHIP_SCALE}x{len(SPRITE)*SHIP_SCALE} units, '
-          f'trail {trail.count("<rect")} cells, {DRIFT_PASSES} crossings at '
-          f'{DRIFT_ANGLE}deg over {drift_secs}s')
-    print(f'  each drops {drop}u; starts at y = ' + ', '.join(map(str, heights))
-          + f' (lowest exit {max(heights) + drop} of {H})')
+          f'trail {trail.count("<rect")} cells over {TRAIL_STEPS} steps, '
+          f'{DRIFT_PASSES} crossings over {drift_secs}s')
     print(f'  present = {today:%Y-%m}')
 
 
