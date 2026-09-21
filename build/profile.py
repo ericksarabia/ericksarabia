@@ -139,6 +139,7 @@ DRIFT_SEED = 81
 # entry has varies: a milestone is its company and its role, the closing entry
 # is its label and its title, log entry zero is only its label.
 HEADER_H = 9                 # advance from one header line to the next
+HEADER_SEP = 3               # character widths between the parts of a header
 BODY_GAP = 10                # from the last header line to the first of the body
 
 # The collected stack, as labels. The site sets its tags in a 1px box with
@@ -265,8 +266,8 @@ def main(out_dir: str) -> None:
     # so nothing can leave a hole.
 
     stack = list(dict.fromkeys(t for m in stones for t in m['tech']))
-    cards = [dict(meta='LOG ENTRY ZERO', name=None, role=None, body=opening(),
-                  year=None, edu=False)]
+    cards = [dict(meta='LOG ENTRY ZERO', name=None, title=None, period=None,
+                  body=opening(), year=None, edu=False)]
     for i, m in enumerate(stones, 1):
         cards.append(dict(
             # No counter and no track label: the marker beside it already says
@@ -274,10 +275,12 @@ def main(out_dir: str) -> None:
             # sits on, and nobody was asking to be told it is stop seven of ten.
             meta=None,
             name=m['name'],
-            role=f'{m["title"]}   {m["period"]}',
+            title=m['title'],
+            period=m['period'],
             body=m['story'], year=m['start'].split('-')[0],
             edu=m['kind'] == 'education'))
-    cards.append(dict(meta='END OF THE LINE', name=epi['title'], role=None,
+    cards.append(dict(meta='END OF THE LINE', name=epi['title'],
+                      title=None, period=None,
                       body=epi['story'] + [epi['stack_label'].upper()],
                       stack=stack, year=None, edu=False))
 
@@ -289,11 +292,23 @@ def main(out_dir: str) -> None:
                 lines.append('')
             lines += textwrap.wrap(para, CHARS_PER_LINE)
         c['lines'] = lines
-        c['head'] = [(line, tone) for line, tone in (
-            (c['meta'], 'text'),
+        # A milestone states itself on one line: where, what, and when. Three
+        # tones rather than three lines is what keeps them apart — the name
+        # brightest, the role in its track's accent, the dates dim.
+        where = [(part, tone) for part, tone in (
             (c['name'], 'eduActive' if c['edu'] else 'markerActive'),
-            (c['role'], 'eduGlow' if c['edu'] else 'markerGlow'),
-        ) if line]
+            (c['title'], 'eduGlow' if c['edu'] else 'markerGlow'),
+            (c['period'], 'text'),
+        ) if part]
+        c['head'] = [seg for seg in ([[(c['meta'], 'text')]] if c['meta'] else [])
+                     + ([where] if where else [])]
+
+        span = sum(len(t) for t, _ in where) + HEADER_SEP * (len(where) - 1)
+        if span > CHARS_PER_LINE:
+            raise SystemExit(
+                f'nothing written: the header for {c["name"]!r} needs {span} '
+                f'characters and the column holds {CHARS_PER_LINE}. Shorten it, '
+                f'or put the dates back on their own line.')
 
         c['y'] = cursor
         c['body_y'] = c['y'] + (len(c['head']) - 1) * HEADER_H + BODY_GAP
@@ -380,10 +395,12 @@ def main(out_dir: str) -> None:
 
     entries = []
     for c in cards:
-        parts = [
-            group(tone, lambda line=line, y=c['y'] + n * HEADER_H: text(line, TEXT_X, y))
-            for n, (line, tone) in enumerate(c['head'])
-        ]
+        parts = []
+        for n, segments in enumerate(c['head']):
+            y, x = c['y'] + n * HEADER_H, TEXT_X
+            for part, tone in segments:
+                parts.append(group(tone, lambda p=part, x=x, y=y: text(p, x, y)))
+                x += 4 * (len(part) + HEADER_SEP)
         parts.append(group('shipCore', lambda c=c: [
             text(l, TEXT_X, c['body_y'] + n * LINE_H) for n, l in enumerate(c['lines'])]))
 
