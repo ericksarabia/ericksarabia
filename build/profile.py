@@ -26,6 +26,7 @@ to be computed here and baked in.
 
 import json
 import random
+import re
 import sys
 import textwrap
 import unicodedata
@@ -127,10 +128,11 @@ DRIFT_MARGIN = 16            # how far beyond each edge it sits when out of fram
 # are shuffled so it does not march predictably down the page.
 DRIFT_SEED = 81
 
-NAME_DY, ROLE_DY = 9, 18     # offsets from an entry's own first line
-BODY_DY = 28                 # with a role line above it
-BODY_DY_NAMED = 19           # a name but no role, as the closing entry has
-BODY_DY_BARE = 9             # neither, as log entry zero has
+# Header lines stack rather than sitting at fixed offsets, because how many an
+# entry has varies: a milestone is its company and its role, the closing entry
+# is its label and its title, log entry zero is only its label.
+HEADER_H = 9                 # advance from one header line to the next
+BODY_GAP = 10                # from the last header line to the first of the body
 LINE_H = 7                   # the face is 5 tall; 7 is the site's leading
 ENTRY_GAP = 20
 
@@ -253,7 +255,10 @@ def main(out_dir: str) -> None:
                   year=None, edu=False)]
     for i, m in enumerate(stones, 1):
         cards.append(dict(
-            meta=f'LOG {i:02} / {len(stones):02}   {m["kind"].upper()}',
+            # No counter and no track label: the marker beside it already says
+            # which of the two it is, by the shape of its node and the rail it
+            # sits on, and nobody was asking to be told it is stop seven of ten.
+            meta=None,
             name=m['name'],
             role=f'{m["title"]}   {m["period"]}',
             body=m['story'], year=m['start'].split('-')[0],
@@ -271,9 +276,14 @@ def main(out_dir: str) -> None:
                 lines.append('')
             lines += textwrap.wrap(para, CHARS_PER_LINE)
         c['lines'] = lines
+        c['head'] = [(line, tone) for line, tone in (
+            (c['meta'], 'text'),
+            (c['name'], 'eduActive' if c['edu'] else 'markerActive'),
+            (c['role'], 'eduGlow' if c['edu'] else 'markerGlow'),
+        ) if line]
+
         c['y'] = cursor
-        body_dy = BODY_DY if c['role'] else BODY_DY_NAMED if c['name'] else BODY_DY_BARE
-        c['body_y'] = c['y'] + body_dy
+        c['body_y'] = c['y'] + (len(c['head']) - 1) * HEADER_H + BODY_GAP
         c['end'] = c['body_y'] + len(lines) * LINE_H
         cursor = c['end'] + ENTRY_GAP
 
@@ -344,13 +354,10 @@ def main(out_dir: str) -> None:
 
     entries = []
     for c in cards:
-        parts = [group('text', lambda c=c: text(c['meta'], TEXT_X, c['y']))]
-        if c['name']:
-            parts.append(group('eduActive' if c['edu'] else C['markerActive'],
-                               lambda c=c: text(c['name'], TEXT_X, c['y'] + NAME_DY)))
-        if c['role']:
-            parts.append(group('eduGlow' if c['edu'] else C['markerGlow'],
-                               lambda c=c: text(c['role'], TEXT_X, c['y'] + ROLE_DY)))
+        parts = [
+            group(tone, lambda line=line, y=c['y'] + n * HEADER_H: text(line, TEXT_X, y))
+            for n, (line, tone) in enumerate(c['head'])
+        ]
         parts.append(group('shipCore', lambda c=c: [
             text(l, TEXT_X, c['body_y'] + n * LINE_H) for n, l in enumerate(c['lines'])]))
         entries.append(''.join(parts))
@@ -503,6 +510,18 @@ def main(out_dir: str) -> None:
     # markup parser reads <style> content as markup, and an <img> written inside
     # a /* */ comment closes nothing and breaks the file. Checked before it is
     # written, because the failure is silent everywhere downstream.
+    # Every class the drawing uses has to resolve, in both palettes. A group
+    # given a colour where a palette key belongs matches no rule at all and
+    # falls back to black, which on the night ground is simply invisible — that
+    # happened, and it reached production, because the check that was here only
+    # looked at classes that already looked like names.
+    named = set(re.findall(r'class="([^"]+)"', svg))
+    for label, block in (('dark', rules(C)), ('light', rules(palette('LIGHT')))):
+        defined = set(re.findall(r'\.([^{]+)\{', block))
+        if missing := sorted(named - defined):
+            raise SystemExit(f'nothing written: {len(missing)} class(es) have no '
+                             f'{label} rule and would fall back to black — {missing}')
+
     try:
         ElementTree.fromstring(svg)
     except ElementTree.ParseError as bad:
