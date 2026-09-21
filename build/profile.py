@@ -120,6 +120,13 @@ TRAIL_STEPS = 9              # blots of exhaust behind the engine
 # tier of text and it reads as what it is: something behind the page.
 SHIP_OPACITY = 0.5
 
+# Stars per ten thousand square units, back layer first, rather than a count.
+# As the log grew the drawing went from 76 units tall to nearly nine hundred
+# while the counts stayed where they were, and the sky quietly thinned to a
+# third of what it was drawn as — the blinking layer went from one every 2,700
+# square units to one every 10,000. A density cannot do that.
+STAR_DENSITY = (10.2, 6.8, 3.7)
+
 DRIFT_PASSES = 5
 DRIFT_SPEED = 62             # units a second while crossing
 DRIFT_OFFSCREEN = 0.15       # share of each pass spent waiting past the right edge
@@ -466,8 +473,10 @@ def main(out_dir: str) -> None:
 
     rnd = random.Random(1337)
     sky = []
-    for tone, count in ((0, 110), (1, 72), (2, 40)):
-        for _ in range(count):
+    for tone, per_10k in enumerate(STAR_DENSITY):
+        # Only the nearest layer twinkles. Blinking the whole sky reads as noise
+        # rather than as depth, which is the rule the canvas starfield follows.
+        for _ in range(round(per_10k * W * H / 10000)):
             sx, sy = rnd.randrange(W), rnd.randrange(H)
             twinkle = (f'<animate attributeName="opacity" values="1;0;1" '
                        f'dur="{2.2 + rnd.random()*2.4:.2f}s" begin="{rnd.random()*3:.2f}s" '
