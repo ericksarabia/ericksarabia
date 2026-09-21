@@ -127,6 +127,21 @@ SHIP_OPACITY = 0.5
 # square units to one every 10,000. A density cannot do that.
 STAR_DENSITY = (10.2, 6.8, 3.7)
 
+# Sightings. Log entry zero is a kid seeing something cross the dark before
+# dawn, so the sky does it back — rarely enough to be caught rather than
+# expected.
+#
+# "Random" is baked, as everything moving here is: a file that runs no script
+# cannot roll for one. What stands in for it is periods sharing no factors, so
+# the three never line up and the combined pattern takes tens of minutes to
+# come round. They fall leftward, against the way the ship travels, so the two
+# are never mistaken for each other.
+SIGHTING_PERIODS = (41, 58, 73)   # seconds apart, deliberately coprime
+SIGHTING_FLIGHT = 0.9             # how long one is on screen
+SIGHTING_REACH = 112              # how far it gets in that time
+SIGHTING_DX, SIGHTING_DY = -0.97, 0.24
+SIGHTING_TAIL = 8
+
 DRIFT_PASSES = 5
 DRIFT_SPEED = 62             # units a second while crossing
 DRIFT_OFFSCREEN = 0.15       # share of each pass spent waiting past the right edge
@@ -623,6 +638,37 @@ def main(out_dir: str) -> None:
                        f'class="s{tone}">{twinkle}</rect>' if twinkle else
                        f'<rect x="{sx}" y="{sy}" width="1" height="1" class="s{tone}"/>')
 
+    # A sighting is a head with a tail walking back up its own flight vector,
+    # brightest at the front. It sits invisible for almost all of its period
+    # and then crosses; the opacity keyframes are what make it an event rather
+    # than a permanent object, and they also hide the jump back to the start.
+    rnd = random.Random(404)
+    heads, rules_css = [], []
+    for i, period in enumerate(SIGHTING_PERIODS):
+        x0 = rnd.uniform(W * 0.45, W * 0.98)
+        y0 = rnd.uniform(12, max(20, H * 0.55))
+        x1 = x0 + SIGHTING_DX * SIGHTING_REACH
+        y1 = y0 + SIGHTING_DY * SIGHTING_REACH
+        cells = ''.join(
+            f'<rect x="{round(-SIGHTING_DX * t)}" y="{round(-SIGHTING_DY * t)}" '
+            f'width="1" height="1" class="s{2 if t == 0 else 1 if t <= 2 else 0}"/>'
+            for t in range(SIGHTING_TAIL))
+        # Where in its own period it crosses, staggered so they do not all
+        # arrive in the first seconds of the loop.
+        a = rnd.uniform(0.15, 0.75) * 100
+        b = a + SIGHTING_FLIGHT / period * 100
+        heads.append(f'<g id="f{i}">{cells}</g>')
+        rules_css.append(
+            f'\n    #f{i} {{ animation: f{i} {period}s linear infinite }}'
+            f'\n    @keyframes f{i} {{'
+            f' 0%, {a:.3f}% {{ opacity: 0; transform: translate({x0:.0f}px, {y0:.0f}px) }}'
+            f' {a + 0.001:.3f}% {{ opacity: 1; transform: translate({x0:.0f}px, {y0:.0f}px) }}'
+            f' {b:.3f}% {{ opacity: 1; transform: translate({x1:.0f}px, {y1:.0f}px) }}'
+            f' {b + 0.001:.3f}%, 100% {{ opacity: 0; transform: translate({x1:.0f}px, {y1:.0f}px) }}'
+            f' }}')
+    sighting_svg = ''.join(heads)
+    sighting_css = ''.join(rules_css)
+
     svg = f"""<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {H}" width="{W*2}" height="{H*2}" shape-rendering="crispEdges" role="img" aria-label="Erick Sarabia's flight log">
   <title>Erick Sarabia — flight log</title>
   <style>
@@ -640,12 +686,12 @@ def main(out_dir: str) -> None:
 
     /* The only thing that travels. Linear, because a crossing that eased in
        and out would look like it was being steered rather than passing. */
-    #ship {{ animation: drift {drift_secs}s linear infinite }}
+    #ship {{ animation: drift {drift_secs}s linear infinite }}{sighting_css}
     @keyframes drift {{ {drift} }}
   </style>
   <defs>{''.join(defs)}</defs>
   <rect width="{W}" height="{H}" class="space"/>
-  {''.join(sky)}
+  {''.join(sky)}{sighting_svg}
   <g id="ship" opacity="{SHIP_OPACITY}">{trail}<g class="shipCore">{''.join(edge)}</g><g class="marker">{''.join(core)}</g></g>
   {rail}
   {''.join(entries)}
