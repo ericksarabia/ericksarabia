@@ -158,6 +158,69 @@ def month_index(ym: str) -> int:
     return y * 12 + m - 1
 
 
+def marked(para: str) -> list:
+    """Split a paragraph on its markup into (text, role) runs.
+
+    `[[like this]]` is the place — the company or the school. `{{like this}}`
+    is what he was there as. Everything else is prose. The markup exists
+    because the two used to sit on a heading line above the story, which read
+    as a CV entry; inside the sentence they need to stay distinguishable, and
+    the drawing has always done that with tone.
+    """
+    runs, at = [], 0
+    for hit in re.finditer(r'\[\[(.+?)\]\]|\{\{(.+?)\}\}', para):
+        if hit.start() > at:
+            runs.append((para[at:hit.start()], None))
+        runs.append((hit.group(1) or hit.group(2),
+                     'place' if hit.group(1) else 'role'))
+        at = hit.end()
+    if at < len(para):
+        runs.append((para[at:], None))
+    return runs
+
+
+def wrap_runs(runs, edu: bool) -> list:
+    """Greedy wrap that carries the tones through.
+
+    Returns a list of lines, each a list of (text, class, column). Words never
+    straddle a run, because the markup always wraps whole ones, so a word can
+    take its tone from the character it starts on.
+    """
+    tone_of = {
+        None: 'shipCore',
+        'place': 'eduActive' if edu else 'markerActive',
+        'role': 'eduGlow' if edu else 'markerGlow',
+    }
+    plain, tones = '', []
+    for text_run, role in runs:
+        plain += text_run
+        tones += [tone_of[role]] * len(text_run)
+
+    lines, line, filled = [], [], 0
+    for word in re.finditer(r'\S+', plain):
+        add = len(word.group()) + (1 if line else 0)
+        if line and filled + add > CHARS_PER_LINE:
+            lines.append(line)
+            line, filled, add = [], 0, len(word.group())
+        line.append((word.group(), tones[word.start()], filled + (add - len(word.group()))))
+        filled += add
+    if line:
+        lines.append(line)
+
+    # Neighbouring words in the same tone become one run, so a line of plain
+    # prose is drawn once rather than word by word.
+    merged = []
+    for line in lines:
+        out = []
+        for text_part, tone, col in line:
+            if out and out[-1][1] == tone and out[-1][2] + len(out[-1][0]) + 1 == col:
+                out[-1] = (out[-1][0] + ' ' + text_part, tone, out[-1][2])
+            else:
+                out.append((text_part, tone, col))
+        merged.append(out)
+    return merged
+
+
 def readme() -> str:
     """The drawing, and nothing else.
 
@@ -270,15 +333,15 @@ def main(out_dir: str) -> None:
                   body=opening(), year=None, edu=False)]
     for i, m in enumerate(stones, 1):
         cards.append(dict(
-            # No counter and no track label: the marker beside it already says
-            # which of the two it is, by the shape of its node and the rail it
-            # sits on, and nobody was asking to be told it is stop seven of ten.
-            meta=None,
-            name=m['name'],
-            title=m['title'],
-            # The period is not drawn: the year beside the rail carries when,
-            # and `year` also marks which cards are stops on the line, which
-            # the rail and the markers both read.
+            # A milestone has no heading at all now. The company and the role
+            # are inside the prose, marked up and drawn in their own tones, and
+            # a heading above that would only say them twice. `name` and
+            # `title` stay in content.json as the record of what the markup is
+            # supposed to contain, not as something drawn.
+            meta=None, name=None, title=None,
+            # The period is not drawn either: the year beside the rail carries
+            # when, and `year` also marks which cards are stops on the line,
+            # which the rail and the markers both read.
             body=m['story'], year=m['start'].split('-')[0],
             edu=m['kind'] == 'education'))
     cards.append(dict(meta='END OF THE LINE', name=epi['title'], title=None,
@@ -291,8 +354,12 @@ def main(out_dir: str) -> None:
         # one. The break still reads — a paragraph ends short of the margin and
         # the next begins at it — and thirteen blank lines across the log came
         # to ninety-one units of height doing nothing else.
+        #
+        # Wrapped by hand rather than with textwrap, because the place and the
+        # role are drawn in their own tones inside the prose and a line has to
+        # arrive knowing which of its words those are.
         c['lines'] = [line for para in c['body']
-                      for line in textwrap.wrap(para, CHARS_PER_LINE)]
+                      for line in wrap_runs(marked(para), c['edu'])]
         # A milestone states itself on one line: where, what, and when. Three
         # tones rather than three lines is what keeps them apart — the name
         # brightest, the role in its track's accent, the dates dim.
@@ -303,12 +370,12 @@ def main(out_dir: str) -> None:
         c['head'] = [seg for seg in ([[(c['meta'], 'text')]] if c['meta'] else [])
                      + ([where] if where else [])]
 
-        span = sum(len(t) for t, _ in where) + HEADER_SEP * (len(where) - 1)
-        if span > CHARS_PER_LINE:
-            raise SystemExit(
-                f'nothing written: the header for {c["name"]!r} needs {span} '
-                f'characters and the column holds {CHARS_PER_LINE}. Shorten it, '
-                f'or put the dates back on their own line.')
+        if where:
+            span = sum(len(t) for t, _ in where) + HEADER_SEP * (len(where) - 1)
+            if span > CHARS_PER_LINE:
+                raise SystemExit(
+                    f'nothing written: the heading {c["name"]!r} needs {span} '
+                    f'characters and the column holds {CHARS_PER_LINE}.')
 
         c['y'] = cursor
         c['body_y'] = c['y'] + (len(c['head']) - 1) * HEADER_H + BODY_GAP
@@ -401,8 +468,11 @@ def main(out_dir: str) -> None:
             for part, tone in segments:
                 parts.append(group(tone, lambda p=part, x=x, y=y: text(p, x, y)))
                 x += 4 * (len(part) + HEADER_SEP)
-        parts.append(group('shipCore', lambda c=c: [
-            text(l, TEXT_X, c['body_y'] + n * LINE_H) for n, l in enumerate(c['lines'])]))
+        for n, line in enumerate(c['lines']):
+            y = c['body_y'] + n * LINE_H
+            for run, tone, col in line:
+                parts.append(group(tone, lambda r=run, x=TEXT_X + col * 4, y=y:
+                                   text(r, x, y)))
 
         if c['chips']:
             def boxes(c=c):

@@ -1,5 +1,5 @@
 {
-  "_": "The log itself. This is the file to edit; everything the drawing says comes from here. Ordered chronologically — the array order is the timeline order, one entry per role rather than per company.",
+  "_": "The log itself. This is the file to edit; everything the drawing says comes from here. Ordered chronologically — the array order is the timeline order, one entry per role rather than per company. In a story, [[double brackets]] mark the place and {{double braces}} the role; both are drawn inline in their own tone, which is where the name and the job title live now instead of on a heading above the prose.",
   "opening": [
     "I was a kid. Before dawn I woke up, went outside, looked up — and there was a ship. A perfect triangle, flying, trailing light that formed more triangles and faded.",
     "My whole family came out. We stood there watching, and it never left me. This is that ship; the rest is where I have been since."
@@ -15,7 +15,7 @@
       "end": "2012-12",
       "story": [
         "I was ten the first time I sat in front of a computer. Then school taught me to program. This was the only thing I ever wanted to study.",
-        "I came to learn how software is really made. I left with a job already waiting."
+        "I went to [[Universidad Politécnica de Pachuca]] for a {{Bachelor's Degree in Software Engineering}}, to learn how software is really made. I left with a job already waiting."
       ],
       "tech": []
     },
@@ -28,7 +28,7 @@
       "start": "2013-01",
       "end": "2013-06",
       "story": [
-        "My first job. The chance came and I did not think twice.",
+        "My first job: {{Game Developer Intern}} at [[Mantiz Game Studios]]. The chance came and I did not think twice.",
         "For months I learned how software is really built inside a company, which is nothing like a classroom. At the end of it, they asked me to stay."
       ],
       "tech": [
@@ -44,7 +44,7 @@
       "start": "2013-07",
       "end": "2015-12",
       "story": [
-        "They kept me, and I spent two and a half years making games. Almost everything I can do today started somewhere in here.",
+        "They kept me on at [[Mantiz Game Studios]] as a {{Game Developer}}, and I spent two and a half years making games. Almost everything I can do today started somewhere in here.",
         "In my last year I built one that ran in a browser. That was the door. I went looking for everything I could find about the web, and I never went back."
       ],
       "tech": [
@@ -61,7 +61,7 @@
       "start": "2016-01",
       "end": "2017-12",
       "story": [
-        "A finance company with no website at all. Building their first one was the whole job.",
+        "[[FINAGAM]] was a finance company with no website at all. As their {{Web Developer}}, building their first one was the whole job.",
         "Then came the tools around it: calculators where anyone could try out a loan or an investment before talking to us. People used them, and then they called. That is where the web stopped being something I was learning."
       ],
       "tech": [
@@ -80,8 +80,8 @@
       "start": "2018-03",
       "end": "2021-02",
       "story": [
-        "I knew how to build for the web. Here I found out what that was worth.",
-        "Three years on speed, and on the habits that last, next to engineers who had come from Google, on sites that hundreds of thousands of people opened every day. I arrived knowing how to build. I left a frontend developer."
+        "I knew how to build for the web. At [[Televisa]] I found out what that was worth.",
+        "Three years on speed, and on the habits that last, next to engineers who had come from Google, on sites that hundreds of thousands of people opened every day. I arrived knowing how to build. I left a {{Frontend Developer}}."
       ],
       "tech": [
         "Next.js",
@@ -99,7 +99,7 @@
       "start": "2021-03",
       "end": "2022-02",
       "story": [
-        "I went looking for a startup: somewhere smaller and faster, with a lot to learn in very little time.",
+        "I went looking for a startup — somewhere smaller and faster, with a lot to learn in very little time — and found [[Skydropx]], as their {{Senior Frontend Engineer}}.",
         "The work grew past my own screen. That year I built the base the rest of the frontend team would work on top of — the first time what I made was for other engineers instead of for users."
       ],
       "tech": [
@@ -121,7 +121,7 @@
       "start": "2022-03",
       "end": "2023-02",
       "story": [
-        "The company was growing fast and they offered me the manager role. I already knew that was where I wanted to go.",
+        "[[Skydropx]] was growing fast and they offered me the {{Engineering Manager}} role. I already knew that was where I wanted to go.",
         "Teaching people and leading them are the two parts of this work I love most, and here they were the whole job. I met everyone we hired, and walked each of them through their first days."
       ],
       "tech": [
@@ -139,8 +139,8 @@
       "start": "2023-03",
       "end": "2026-02",
       "story": [
-        "A big global company, where everything moved slower. That was exactly why I went.",
-        "Three years leading projects and people across several countries, at a size where the hardest part is no longer the code. I came for that, and to lead a team in a second language. I left a solid base standing behind me."
+        "[[Danone]] was a big global company, where everything moved slower. That was exactly why I went.",
+        "Three years as their {{IT Manager}}, leading projects and people across several countries, at a size where the hardest part is no longer the code. I came for that, and to lead a team in a second language. I left a solid base standing behind me."
       ],
       "tech": [
         "Vite",
@@ -157,7 +157,7 @@
       "start": "2024-01",
       "end": "2025-12",
       "story": [
-        "A master's degree, earned while I was running a team.",
+        "A {{Master's Degree in Software Engineering and Management}} from [[UTEL Universidad]], earned while I was running a team.",
         "I did it for one reason. Some day I want to teach: to stand in a classroom and hand all of this to someone who is just starting, the way it was once handed to me."
       ],
       "tech": []
@@ -172,7 +172,7 @@
       "end": null,
       "story": [
         "I went looking for the next challenge, and I wanted this one harder than the last. More technical. More complex.",
-        "That is what this is: problems I enjoy being stuck on, a new business to learn, and both halves of the job — the code and the people — still to get better at."
+        "That is what [[GBM]] is, as their {{Engineering Manager}}: problems I enjoy being stuck on, a new business to learn, and both halves of the job — the code and the people — still to get better at."
       ],
       "tech": [
         "AWS"
