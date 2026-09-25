@@ -20,36 +20,24 @@
       "tech": []
     },
     {
-      "id": "mantiz-intern",
-      "kind": "work",
-      "name": "Mantiz Game Studios",
-      "title": "Game Developer Intern",
-      "period": "Jan 2013 — Jun 2013",
-      "start": "2013-01",
-      "end": "2013-06",
-      "story": [
-        "My first job: {{Game Developer Intern}} at [[Mantiz Game Studios]]. The chance came and I did not think twice.",
-        "For months I learned how software is really built inside a company, which is nothing like a classroom. At the end of it, they asked me to stay."
-      ],
-      "tech": [
-        "JavaScript"
-      ]
-    },
-    {
-      "id": "mantiz-dev",
+      "id": "mantiz",
       "kind": "work",
       "name": "Mantiz Game Studios",
       "title": "Game Developer",
-      "period": "Jul 2013 — Dec 2015",
-      "start": "2013-07",
+      "period": "Jan 2013 — Dec 2015",
+      "start": "2013-01",
       "end": "2015-12",
       "story": [
-        "They kept me on at [[Mantiz Game Studios]] as a {{Game Developer}}, and I spent two and a half years making games. Almost everything I can do today started somewhere in here.",
+        "My first job: {{Game Developer Intern}} at [[Mantiz Game Studios]]. The chance came and I did not think twice.",
+        "For months I learned how software is really built inside a company, which is nothing like a classroom. At the end of it they asked me to stay, and I spent two and a half years there making games as a {{Game Developer}}. Almost everything I can do today started somewhere in here.",
         "In my last year I built one that ran in a browser. That was the door. I went looking for everything I could find about the web, and I never went back."
       ],
       "tech": [
+        "JavaScript",
         "HTML",
-        "CSS"
+        "CSS",
+        "jQuery",
+        "Bootstrap"
       ]
     },
     {
@@ -65,10 +53,10 @@
         "Then came the tools around it: calculators where anyone could try out a loan or an investment before talking to us. People used them, and then they called. That is where the web stopped being something I was learning."
       ],
       "tech": [
-        "React",
-        "Webpack",
-        "Bootstrap",
-        "GitHub"
+        "Node.js",
+        "MongoDB",
+        "Express.js",
+        "React"
       ]
     },
     {
@@ -87,45 +75,32 @@
         "Next.js",
         "Graphql",
         "Styled Components",
-        "Jest"
+        "Jest",
+        "GitHub",
+        "Storybook",
+        "Docker"
       ]
     },
     {
-      "id": "skydropx-senior",
+      "id": "skydropx",
       "kind": "work",
       "name": "Skydropx",
-      "title": "Senior Frontend Engineer",
-      "period": "Mar 2021 — Feb 2022",
+      "title": "Engineering Manager",
+      "period": "Mar 2021 — Feb 2023",
       "start": "2021-03",
-      "end": "2022-02",
+      "end": "2023-02",
       "story": [
         "I went looking for a startup — somewhere smaller and faster, with a lot to learn in very little time — and found [[Skydropx]], as their {{Senior Frontend Engineer}}.",
-        "The work grew past my own screen. That year I built the base the rest of the frontend team would work on top of — the first time what I made was for other engineers instead of for users."
+        "The work grew past my own screen. That year I built the base the rest of the frontend team would work on top of — the first time what I made was for other engineers instead of for users.",
+        "The company was growing fast and they offered me the {{Engineering Manager}} role. I already knew that was where I wanted to go.",
+        "Teaching people and leading them are the two parts of this work I love most, and here they were the whole job. I met everyone we hired, and walked each of them through their first days."
       ],
       "tech": [
         "NX",
         "RTL",
+        "Emotion",
         "TypeScript",
-        "Tailwind",
-        "Storybook",
         "React Query",
-        "Emotion"
-      ]
-    },
-    {
-      "id": "skydropx-em",
-      "kind": "work",
-      "name": "Skydropx",
-      "title": "Engineering Manager",
-      "period": "Mar 2022 — Feb 2023",
-      "start": "2022-03",
-      "end": "2023-02",
-      "story": [
-        "[[Skydropx]] was growing fast and they offered me the {{Engineering Manager}} role. I already knew that was where I wanted to go.",
-        "Teaching people and leading them are the two parts of this work I love most, and here they were the whole job. I met everyone we hired, and walked each of them through their first days."
-      ],
-      "tech": [
-        "Docker",
         "GitHub Actions",
         "Vercel"
       ]
@@ -145,7 +120,9 @@
       "tech": [
         "Vite",
         "Astro",
-        "Playwright"
+        "Playwright",
+        "Tailwind",
+        "AWS"
       ]
     },
     {
@@ -174,14 +151,11 @@
         "I went looking for the next challenge, and I wanted this one harder than the last. More technical. More complex.",
         "That is what [[GBM]] is, as their {{Engineering Manager}}: problems I enjoy being stuck on, a new business to learn, and both halves of the job — the code and the people — still to get better at."
       ],
-      "tech": [
-        "AWS"
-      ]
+      "tech": []
     }
   ],
   "epilogue": {
     "title": "The log continues",
-    "stack_label": "Picked up along the way",
     "story": [
       "Still flying. I want to grow here, and build a real community around this work.",
       "The kid sitting down in front of that first computer had no idea any of this was out there. Neither do I, about what comes next. That is the best part."

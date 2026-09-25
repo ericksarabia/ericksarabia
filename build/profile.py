@@ -96,7 +96,28 @@ RAIL_X = 26                  # the main line
 EDU_RAIL_X = RAIL_X - 3      # education runs on its own rail, as on the canvas
 TEXT_X = 40
 TEXT_RIGHT = 12
-CHARS_PER_LINE = (W - TEXT_X - TEXT_RIGHT + 1) // 4
+# One column of tools down the right, beside the prose rather than under it.
+# That width is what the prose gives up. Putting them under each entry instead
+# costs height the column does not: the text keeps its width but every stop
+# grows by its own rows.
+#
+# The floor is the longest label there is, "Styled Components" — seventeen
+# characters, 75 units once it has its box. Two more than that, because at 75
+# "Storybook" and "Docker" miss sharing a row by exactly two units and each
+# takes one of its own. The two units come out of the prose, which holds 80
+# characters a line instead of 81 and wraps to the same 55 lines either way,
+# so they are free.
+TECH_COL_W = 77
+TECH_GUTTER = 14             # between the last word of the prose and the boxes
+TECH_X = W - TEXT_RIGHT - TECH_COL_W
+CHARS_PER_LINE = (TECH_X - TECH_GUTTER - TEXT_X + 1) // 4
+# An entry with no tools takes the whole measure instead: the column is only
+# there to be left room for when something is going to be drawn in it, and for
+# these nothing is. Four of the ten qualify — the two degrees, the current post
+# and log entry zero — so the right edge of the prose steps out and back as the
+# log goes down. That ragged edge is the cost; the alternative is reserving a
+# third of the line for a column that is empty on those entries.
+FULL_CHARS = (W - TEXT_RIGHT - TEXT_X + 1) // 4
 
 TOP = 16
 DASH_ON, DASH_PERIOD = 3, 8
@@ -165,7 +186,7 @@ HEADER_H = 9                 # advance from one header line to the next
 HEADER_SEP = 3               # character widths between the parts of a header
 BODY_GAP = 10                # from the last header line to the first of the body
 
-# The collected stack, as labels. The site sets its tags in a 1px box with
+# The tools beside each stop, as labels. The site sets its tags in a 1px box with
 # 5px/8px of padding around 11px text; at a five-unit face the same proportions
 # come out at two and three.
 CHIP_PAD_X, CHIP_PAD_Y = 3, 2
@@ -208,7 +229,7 @@ def marked(para: str) -> list:
     return runs
 
 
-def wrap_runs(runs, edu: bool) -> list:
+def wrap_runs(runs, edu: bool, width: int = CHARS_PER_LINE) -> list:
     """Greedy wrap that carries the tones through.
 
     Returns a list of lines, each a list of (text, class, column). Words never
@@ -233,7 +254,7 @@ def wrap_runs(runs, edu: bool) -> list:
     lines, line, filled = [], [], 0
     for word in re.finditer(r'\S+', plain):
         add = len(word.group()) + (1 if line else 0)
-        if line and filled + add > CHARS_PER_LINE:
+        if line and filled + add > width:
             lines.append(line)
             line, filled, add = [], 0, len(word.group())
         line.append((word.group(), tones[word.start()], filled + (add - len(word.group()))))
@@ -362,7 +383,6 @@ def main(out_dir: str) -> None:
     # Straight after the one above it. Nothing is positioned by date any more,
     # so nothing can leave a hole.
 
-    stack = list(dict.fromkeys(t for m in stones for t in m['tech']))
     cards = [dict(meta='LOG ENTRY ZERO', name=None, title=None,
                   body=opening(), year=None, edu=False)]
     for i, m in enumerate(stones, 1):
@@ -377,12 +397,14 @@ def main(out_dir: str) -> None:
             # when, and `year` also marks which cards are stops on the line,
             # which the rail and the markers both read.
             body=m['story'], year=m['start'].split('-')[0],
+            # What he picked up at this stop. Two of the ten have none listed —
+            # the degree and the master's — and those simply show no boxes.
+            tools=m['tech'],
             edu=m['kind'] == 'education'))
     # No label above it: "The log continues" is the closing line, and a heading
     # reading END OF THE LINE directly over it said the opposite thing anyway.
     cards.append(dict(meta=None, name=epi['title'], title=None,
-                      body=epi['story'] + [epi['stack_label'].upper()],
-                      stack=stack, year=None, edu=False))
+                      body=epi['story'], year=None, edu=False))
 
     cursor = TOP
     for c in cards:
@@ -395,7 +417,9 @@ def main(out_dir: str) -> None:
         # role are drawn in their own tones inside the prose and a line has to
         # arrive knowing which of its words those are.
         c['lines'] = [line for para in c['body']
-                      for line in wrap_runs(marked(para), c['edu'])]
+                      for line in wrap_runs(marked(para), c['edu'],
+                                            CHARS_PER_LINE if c.get('tools')
+                                            else FULL_CHARS)]
         # A milestone states itself on one line: where, what, and when. Three
         # tones rather than three lines is what keeps them apart — the name
         # brightest, the role in its track's accent, the dates dim.
@@ -417,18 +441,26 @@ def main(out_dir: str) -> None:
         c['body_y'] = c['y'] + (len(c['head']) - 1) * HEADER_H + BODY_GAP
         c['end'] = c['body_y'] + len(c['lines']) * LINE_H
 
-        # Labels flow along the line and wrap, so the block is as tall as the
-        # stack needs rather than a number written down here.
-        c['chips'] = []
-        x, y = TEXT_X, c['end'] + CHIP_GAP_Y
-        for label in c.get('stack') or []:
+        # The tools for this stop, flowing along the column and wrapping when
+        # the next one will not fit. One label per row cost a full row to each
+        # of them however short they were: CSS is three characters and was
+        # taking the same height as the widest label in the log. Flowing them
+        # halves most of the blocks.
+        #
+        # An entry still ends at whichever of its two halves runs longer, but
+        # now the prose almost always wins, which is what closed the gaps that
+        # the stacked column was opening beside the shorter stories.
+        c['tech'] = []
+        x, y = TECH_X, c['y']
+        for label in c.get('tools') or []:
             width = 4 * len(label) + 1 + 2 * CHIP_PAD_X
-            if x > TEXT_X and x + width > W - TEXT_RIGHT:
-                x, y = TEXT_X, y + CHIP_H + CHIP_GAP_Y
-            c['chips'].append((x, y, width, label))
+            if x > TECH_X and x + width > W - TEXT_RIGHT:
+                x, y = TECH_X, y + CHIP_H + CHIP_GAP_Y
+            c['tech'].append((x, y, width, label))
             x += width + CHIP_GAP_X
-        if c['chips']:
-            c['end'] = y + CHIP_H
+        if c['tech']:
+            c['end'] = max(c['end'], y + CHIP_H)
+
         cursor = c['end'] + ENTRY_GAP
 
     H = cursor - ENTRY_GAP + 10
@@ -517,17 +549,19 @@ def main(out_dir: str) -> None:
                     parts.append(group(tone, lambda w=len(run) * 4 - 1, x=x, y=y:
                                        px(x, y + UNDERLINE_DY, w, 1)))
 
-        if c['chips']:
-            def boxes(c=c):
-                for x, y, w, _ in c['chips']:
+        # The tools beside this stop.
+        if c['tech']:
+            def edges(boxed=c['tech']):
+                for x, y, w, _ in boxed:
                     px(x, y, w, 1)                          # top
                     px(x, y + CHIP_H - 1, w, 1)             # bottom
                     px(x, y + 1, 1, CHIP_H - 2)             # left
                     px(x + w - 1, y + 1, 1, CHIP_H - 2)     # right
-            parts.append(group('timelineLit', boxes))
-            parts.append(group('shipCore', lambda c=c: [
+
+            parts.append(group('timelineLit', edges))
+            parts.append(group('shipCore', lambda boxed=c['tech']: [
                 text(label, x + 1 + CHIP_PAD_X, y + 1 + CHIP_PAD_Y)
-                for x, y, _, label in c['chips']]))
+                for x, y, _, label in boxed]))
         entries.append(''.join(parts))
 
     # --- ship ---------------------------------------------------------------
